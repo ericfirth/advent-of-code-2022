@@ -16,21 +16,49 @@ func main() {
 		log.Fatalf("readLines: %s", err)
 	}
 
-	overlapping_chars := []string{}
+	overlappingChars := []string{}
 	for _, line := range lines {
-		// fmt.Println("Line: ", line)
-		// firstHalf, secondHalf := getHalves(line)
-		// fmt.Println(firstHalf, secondHalf)
-		// fmt.Println("common chars", getCommonCharsFromLine(line))
-		overlapping_chars = append(overlapping_chars, getCommonCharsFromLine(line)...)
-		// fmt.Println(overlapping_chars)
+		overlappingChars = append(overlappingChars, getCommonCharsFromLine(line)...)
 	}
 
-	sum := 0
-	for _, char := range overlapping_chars {
-		sum += getValueOfChar(char)
+	sumForAnswerOne := 0
+	for _, char := range overlappingChars {
+		sumForAnswerOne += getValueOfChar(char)
 	}
-	fmt.Println("Sum of overlapping chars: ", sum)
+	fmt.Println("Sum of overlapping chars: ", sumForAnswerOne)
+
+	groupsOfThree := getGroupsOfThree(lines)
+	fmt.Println("num groups should be: ", len(lines)/3, " and is: ", len(groupsOfThree))
+	sumForAnswerTwo := 0
+	for _, group := range groupsOfThree {
+		sumForAnswerTwo += getValueOfChar(getCommonCharFromGroupOfThree(group))
+	}
+
+	fmt.Println("Sum of common chars: ", sumForAnswerTwo)
+}
+
+func getCommonCharFromGroupOfThree(group [3]string) string {
+	var commonChar string
+	for _, char := range group[0] {
+		if strings.Count(group[1], string(char)) >= 1 && strings.Count(group[2], string(char)) >= 1 {
+			commonChar = string(char)
+		}
+	}
+	return commonChar
+}
+
+func getGroupsOfThree(lines []string) [][3]string {
+	var groupsOfThree [][3]string
+	var group [3]string
+	fmt.Println(lines)
+	for i, line := range lines {
+		group[i%3] = line
+		if i%3 == 2 {
+			groupsOfThree = append(groupsOfThree, group)
+			group = [3]string{}
+		}
+	}
+	return groupsOfThree
 }
 
 func getValueOfChar(char string) int {
@@ -95,7 +123,6 @@ func getCommonCharsFromLine(line string) []string {
 	mymap := make(map[string]bool)
 	firstHalf, secondHalf := getHalves(line)
 	for _, char := range firstHalf {
-		fmt.Println("Char: ", string(char), "Second Half: ", secondHalf, "Count: ", strings.Count(secondHalf, string(char)))
 		if strings.Count(secondHalf, string(char)) >= 1 {
 			mymap[string(char)] = true
 		}
