@@ -15,17 +15,30 @@ func main() {
 		log.Fatalf("readLines: %s", err)
 	}
 
-	sum := 0
+	sumForTotalOverlap := 0
 	for _, line := range lines {
 		range1, range2 := intoRanges(line)
-		if rangesOverlap(range1, range2) {
-			sum++
+		if rangesOverlapEntirely(range1, range2) {
+			sumForTotalOverlap++
 		}
 	}
-	fmt.Println("Total overlaps: ", sum)
+	fmt.Println("Total overlaps: ", sumForTotalOverlap)
+
+	sumForAnyOverlap := 0
+	for _, line := range lines {
+		range1, range2 := intoRanges(line)
+		if rangesOverlapAtAll(range1, range2) {
+			sumForAnyOverlap++
+		}
+	}
+	fmt.Println("Any overlaps: ", sumForAnyOverlap)
 }
 
-func rangesOverlap(range1 []int, range2 []int) bool {
+func rangesOverlapAtAll(range1 []int, range2 []int) bool {
+	return range2[0] <= range1[1] && range2[1] >= range1[0]
+}
+
+func rangesOverlapEntirely(range1 []int, range2 []int) bool {
 	return range2[0] >= range1[0]  && range2[1] <= range1[1] || range1[0] >= range2[0] && range1[1] <= range2[1]
 }
 
