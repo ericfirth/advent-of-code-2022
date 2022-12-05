@@ -23,24 +23,34 @@ func main() {
 	}
 
 	stacks, instructions := getStacksAndInstructions(lines)
-	fmt.Println("stacks", stacks)
-	fmt.Println("instructions", instructions)
 	for _, instruction := range instructions {
-		fmt.Println("before:", stacks, "instruction:", instruction)
-		stacks = performInstruction(stacks, instruction)
-		fmt.Println("after:", stacks)
+		stacks = performInstructionForAnswerOne(stacks, instruction)
 	}
 
 	var result string
+	for i := 1; i <= len(stacks); i++ {
+		result += stacks[i][0]
+	}
+
+	fmt.Println("Result of answer one:", result)
+
+	stacks, instructions = getStacksAndInstructions(lines)
+	for _, instruction := range instructions {
+		fmt.Println("stack before:", stacks)
+		stacks = performInstructionForAnswerTwo(stacks, instruction)
+		fmt.Println("stack after:", stacks)
+	}
+
+	result = ""
 	for i := 1; i <= len(stacks); i++ {
 		fmt.Println("stack", i, ":", stacks[i])
 		result += stacks[i][0]
 	}
 
-	fmt.Println("Result of answer one:", result)
+	fmt.Println("Result of answer two:", result)
 }
 
-func performInstruction(stacks map[int][]string, instruction Instruction) map[int][]string {
+func performInstructionForAnswerOne(stacks map[int][]string, instruction Instruction) map[int][]string {
 	// copy the stack
 	newStacks := make(map[int][]string)
 	for k, v := range stacks {
@@ -49,23 +59,32 @@ func performInstruction(stacks map[int][]string, instruction Instruction) map[in
 
 	for i := 0; i < instruction.numToMove; i++ {
 		char := newStacks[instruction.from][0]
-		fmt.Println("char", char, "old from: ", newStacks[instruction.from], "old to: ", newStacks[instruction.to])
 		newStacks[instruction.from] = newStacks[instruction.from][1:len(newStacks[instruction.from])]
-		fmt.Println("new from: ", newStacks[instruction.from])
 		newStacks[instruction.to] = append([]string{char}, newStacks[instruction.to]...)
-		fmt.Println("new to: ", newStacks[instruction.to])
 	}
 
 	return newStacks
 }
 
-// func reverseArray(initial []string) []string {
-// 	result := make([]string, len(initial))
-// 	for i, v := range initial {
-// 		result[len(initial)-1-i] = v
-// 	}
-// 	return result
-// }
+func performInstructionForAnswerTwo(stacks map[int][]string, instruction Instruction) map[int][]string {
+	// copy the stack
+	newStacks := make(map[int][]string)
+	for k, v := range stacks {
+		newValue := v
+		newStacks[k] = newValue
+	}
+	var newFrom []string
+	var newTo []string
+
+	charsToMove := stacks[instruction.from][0:instruction.numToMove]
+	newFrom = stacks[instruction.from][instruction.numToMove:len(stacks[instruction.from])]
+	newStacks[instruction.from] = newFrom
+	newTo = append(charsToMove[:len(charsToMove):len(charsToMove)], stacks[instruction.to]...)
+
+	newStacks[instruction.to] = newTo
+
+	return newStacks
+}
 
 func makeInstructions(input string) []Instruction {
 	result := []Instruction{}
