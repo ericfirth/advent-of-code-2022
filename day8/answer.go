@@ -12,7 +12,78 @@ import (
 func main() {
 	answerOne("sample_input.txt")
 	answerOne("input.txt")
-	// answerTwo("sample_input.txt")
+	answerTwo("sample_input.txt")
+	answerTwo("input.txt")
+}
+
+func answerTwo(filename string) {
+	lines, err := readLines(filename)
+	if err != nil {
+		log.Fatalf("readLines: %s", err)
+	}
+
+	for _, line := range lines {
+		fmt.Println(line)
+	}
+	grid := asGrid(lines)
+
+	var highestScenicScore int
+	for y, row := range grid {
+		for x := range row {
+			score := calcScenicScore(grid, x, y)
+			if score > highestScenicScore {
+				highestScenicScore = score
+			}
+		}
+	}
+	fmt.Println("Highest scenic score:", highestScenicScore)
+}
+
+func calcScenicScore(grid [][]int, x, y int) int {
+	num := grid[y][x]
+	left := 0
+	right := 0
+	top := 0
+	bottom := 0
+
+	// Check left
+	for i := x - 1; i >= 0; i-- {
+		otherNum := grid[y][i]
+		left++
+		if otherNum >= num {
+			break
+		}
+	}
+
+	// Check right
+	for _, otherNum := range grid[y][x+1:] {
+		right++
+		if otherNum >= num {
+			break
+		}
+	}
+
+	// Check top
+	for i := y - 1; i >= 0; i-- {
+		otherRow := grid[i]
+		otherNum := otherRow[x]
+		top++
+		if otherNum >= num {
+			break
+		}
+	}
+
+	// Check bottom
+	for _, otherRow := range grid[y+1:] {
+		otherNum := otherRow[x]
+		bottom++
+		if otherNum >= num {
+			break
+		}
+	}
+
+	scenicScore := left * right * top * bottom
+	return scenicScore
 }
 
 func answerOne(filename string) {
